@@ -7,4 +7,54 @@
         insert into dish (id, category_id, name, image, price, description, status, create_time, update_time,create_user,update_user)
         values (#{id}, #{categoryId}, #{name}, #{image}, #{price}, #{description}, #{status}, #{createTime}, #{updateTime},#{createUser},#{updateUser})
     </insert>
+
+    <update id="update" parameterType="com.sky.entity.Dish">
+        update dish
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="pageQueryWithCategoryName" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as category_name from dish d left join category c on d.category_id = c.id
+    </select>
+
+    <select id="selectStartByIds" resultType="com.sky.entity.Dish">
+        select * from dish where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and status = 1
+    </select>
 </mapper>
