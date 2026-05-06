@@ -11,3 +11,7 @@ sky:
     access-key-id: ${ACCESS-KEY-ID}
     access-key-secret: ${ACCESS-KEY-SECRET}
     bucket-name: test-cast
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
