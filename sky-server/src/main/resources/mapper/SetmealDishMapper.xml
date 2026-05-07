@@ -32,4 +32,9 @@
                                                       and sd.dish_id = d.id
                                                       and d.status = 0
     </select>
+
+    <select id="selectDishItemBySetmealId" resultType="com.sky.vo.DishItemVO">
+        select sd.copies,sd.name,d.description,d.image from setmeal_dish sd, dish d
+        where sd.setmeal_id = #{id} and sd.dish_id = d.id
+    </select>
 </mapper>
