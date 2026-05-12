@@ -36,6 +36,13 @@
             <if test="number != null and number!='' ">and number = #{number}</if>
         </where>
     </update>
+
+
+    <update id="updateBatch">
+        update orders set
+    </update>
+
+
     <select id="pageQuery" resultType="Orders">
         select * from orders
         <where>
