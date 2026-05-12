@@ -1,10 +1,10 @@
 package com.sky.mapper;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
+import com.sky.vo.OrderVO;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -29,4 +29,33 @@ public interface OrderMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    /**
+     * 根据订单id查询订单详情
+     * @param id
+     * @return
+     */
+    @Select("select * from orders where id = #{id}")
+    Orders getById(Long id);
+
+    /**
+     * 分页查询订单
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    List<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 删除订单
+     * @param id
+     */
+    @Delete("delete from orders where id = #{id}")
+    void deleteById(Long id);
+
+    /**
+     * 根据订单状态查询订单菜品信息
+     * @param orders
+     * @return
+     */
+    List<Orders> list(Orders orders);
 }
