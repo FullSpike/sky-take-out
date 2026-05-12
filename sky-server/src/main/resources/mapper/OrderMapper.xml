@@ -38,10 +38,6 @@
     </update>
 
 
-    <update id="updateBatch">
-        update orders set
-    </update>
-
 
     <select id="pageQuery" resultType="Orders">
         select * from orders
