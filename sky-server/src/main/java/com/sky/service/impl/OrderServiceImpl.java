@@ -22,6 +22,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @Value("${sky.shop.address")
     private String shopAddress;
@@ -124,8 +127,16 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
+    @Transactional
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) {
+        //根据用户id查询用户信息
+        Long userId = BaseContext.getCurrentId();
+
+        //根据订单号查询订单
+        Orders orderDB = orderMapper.getByNumberAndUserId(ordersPaymentDTO.getOrderNumber(), userId);
+
         Orders orders =  Orders.builder()
+                .id(orderDB.getId())
                 .status(Orders.TO_BE_CONFIRMED)
                 .number(ordersPaymentDTO.getOrderNumber())
                 .checkoutTime(LocalDateTime.now())
@@ -133,6 +144,16 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         //更新订单状态
         orderMapper.update(orders);
+
+        //来单提醒
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("orderId", orderDB.getId());
+        map.put("content","订单号：" + ordersPaymentDTO.getOrderNumber());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
 
         return null;
     }
@@ -404,6 +425,31 @@ public class OrderServiceImpl implements OrderService {
                 .deliveryTime(LocalDateTime.now())
                 .build();
         orderMapper.update(orders);
+    }
+
+    /**
+     * 催单提醒
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        //根据订单id查询数据库
+        Orders ordersDB = orderMapper.getById(id);
+
+        //业务异常
+        if(ordersDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //催单提醒
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 2);
+        map.put("orderId", ordersDB.getId());
+        map.put("content","订单号：" + ordersDB.getNumber());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
     }
 
 
