@@ -1,13 +1,16 @@
 package com.sky.mapper;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
+import com.sky.vo.SalesTop10ReportVO;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -77,4 +80,26 @@ public interface OrderMapper {
      */
     @Select("select * from orders where number = #{orderNumber} and user_id = #{userId}")
     Orders getByNumberAndUserId(String orderNumber, Long userId);
+
+    /**
+     * 根据订单状态查询订单金额
+     * @param map
+     * @return
+     */
+    Double sumAmountByMap(Map map);
+
+    /**
+     * 查询Top10Top10销售商品
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<GoodsSalesDTO> getTop10ByBeginAndEnd(LocalDateTime beginTime, LocalDateTime endTime);
+
+    /**
+     * 根据订单状态查询订单数
+     * @param orderMap
+     * @return
+     */
+    Integer countByMap(Map<String, Object> orderMap);
 }
